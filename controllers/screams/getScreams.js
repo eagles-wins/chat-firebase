@@ -17,7 +17,12 @@ const getScreams = async (req, res) => {
       orderBy("createdAt", "desc")
     );
     const result = await getDocs(queryData);
-    result.forEach((doc) => screams.push(doc.data()));
+    result.forEach((doc) =>
+      screams.push({
+        screamId: doc.id,
+        ...doc.data(),
+      })
+    );
     return res.json(screams);
   } catch (err) {
     console.log(err);
@@ -25,6 +30,9 @@ const getScreams = async (req, res) => {
 };
 
 const createScreams = async (req, res) => {
+  if (req.method !== "POST") {
+    return res.status(404).json({ error: "Method is not allowed" });
+  }
   const { userHandle, body } = req.body;
   const newScreams = {
     userHandle,
